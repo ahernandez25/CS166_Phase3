@@ -1,4 +1,5 @@
 #! /bin/bash
+#export PGPORT=45000 # For Ashly
 export PGDATA=/tmp/$LOGNAME/test/data
 
 sleep 1

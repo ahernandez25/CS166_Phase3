@@ -25,5 +25,5 @@ psql -h /tmp/$LOGNAME/sockets $DBNAME < ../sql/create.sql
 
 #echo "Initializing tables .. "
 #sleep 1
-#psql -h /tmp/ahern122/sockets phase3 < ../sql/create.sql
+#psql -h /tmp/ahern122/sockets $DBNAME < ../sql/create.sql
 
