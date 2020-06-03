@@ -1,9 +1,18 @@
-#! /bin/bash
-#export PGPORT=45000 # For Ashly
-export PGDATA=/tmp/$LOGNAME/test/data
+#!/bin/bash
+folder=/tmp/$(logname)/mydb
+PGDATA=$folder/data
+PGSOCKETS=$folder/sockets
+export PGDATA
+export PGSOCKETS
 
-sleep 1
-#Starts the database server
-pg_ctl -o "-c unix_socket_directories=/tmp/$LOGNAME/sockets" -D $PGDATA -l /tmp/$LOGNAME/logfile start
+#Initialize folders
+rm -fr $PGDATA
+mkdir -p $PGDATA
+rm -fr $PGSOCKETS
+mkdir -p $PGSOCKETS
 
+#Initialize DB
+initdb
 
+#Start folder
+pg_ctl -o "-c unix_socket_directories=$PGSOCKETS" -D $PGDATA -l $folder/logfile start
