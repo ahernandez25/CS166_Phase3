@@ -348,11 +348,30 @@ public class Ticketmaster {
 	}// end readChoice
 
 	public static void AddUser(Ticketmaster esql) {// 1
+		System.out.println("Enter first name of new user: ");
+                String fname = in.nextLine();
+                System.out.println("Enter last name of new user: ");
+                String lname = in.nextLine();
+                System.out.println("Enter email address of new user: ");
+                String email = in.nextLine();
+                System.out.println("Enter phone number of new user: ");
+                String phone = in.nextLine();
 
+                
+                while(!validemail(email)) {
+                        System.out.println("Invalid email address! Please enter your email: ");
+                        email = in.nextLine();
+                }
+                while(!validPhone(phone)) {
+                        System.out.println("Invalid phone number! Please enter your phone number: ");
+                        phone = in.nextLine();
+                }
+                
+                //enter user into DB
 	}
 
 	public static void AddBooking(Ticketmaster esql) {// 2
-
+		System.out.println("Enter: ");
 	}
 
 	public static void AddMovieShowingToTheater(Ticketmaster esql) {// 3
