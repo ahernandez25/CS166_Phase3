@@ -408,16 +408,18 @@ public class Ticketmaster {
 
 
 		String startTime;
-		String endTime;
+		String date;
+
+		System.out.println("Date(MM/DD/YYYY): ");
+		date = in.readLine();
 
 		System.out.println("Start time (Hour:Minute): ");
 		startTime = in.readLine();
 		
-		System.out.println("End time (Hour:Minute): ");
-		endTime = in.readLine();
 
-		String q = "SELECT title FROM Movies where mvid = (SELECT mvid FROM Shows WHERE sttime = " + startTime + 
-		", edtime = " + endTime + ");";
+		String q = "SELECT title FROM movies WHERE mvid IN  (SELECT mvid FROM shows WHERE sdate = '" + date + "' and sttime = '" 
+		+ startTime + "')";
+
 
 		int result = esql.executeQueryAndPrintResult(q);
 	}
