@@ -440,7 +440,7 @@ public class Ticketmaster {
 		
 	}
 
-	public static void ListMovieAndShowInfoAtCinemaInDateRange(Ticketmaster esql) throws IOException {// 13
+	public static void ListMovieAndShowInfoAtCinemaInDateRange(Ticketmaster esql) throws IOException, SQLException {// 13
 		/*select m1.title, m1.duration, s1.sdate, s1.sttime from movies m1, shows s1 where m1.title = 
 		'Avatar' and sdate in (select s2.sdate from shows s2 where s2.sdate between '01/01/2019' and 
 		'12/31/2019' and s2.mvid = (select m2.mvid from movies m2 where m2.title = 'Avatar')) and 
@@ -466,6 +466,12 @@ public class Ticketmaster {
 		+ date2 + "' and s2.mvid = (select m2.mvid from movies m2 where m2.title = '" + movieTitle + "')) and" 
 		+ "sid in (select p1.sid from plays p1 where p1.tid in (select t1.tid from theaters t1 where" + 
 		"t1.cid in (select c1.cid from cinemas c1 where c1.cname = '" + theaterName + "')));";
+
+		System.out.println("");
+		int result = esql.executeQueryAndPrintResult(q);
+		System.out.println("\n");
+
+
 	}
 
 	public static void ListBookingInfoForUser(Ticketmaster esql){//14
