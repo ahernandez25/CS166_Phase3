@@ -348,7 +348,7 @@ public class Ticketmaster {
 	}// end readChoice
 
 	public static void AddUser(Ticketmaster esql) {// 1
-		System.out.println("Enter first name of new user: ");
+		/*System.out.println("Enter first name of new user: ");
                 String fname = in.nextLine();
                 System.out.println("Enter last name of new user: ");
                 String lname = in.nextLine();
@@ -365,7 +365,7 @@ public class Ticketmaster {
                 while(!validPhone(phone)) {
                         System.out.println("Invalid phone number! Please enter your phone number: ");
                         phone = in.nextLine();
-                }
+                }*/
                 
                 //enter user into DB
 	}
