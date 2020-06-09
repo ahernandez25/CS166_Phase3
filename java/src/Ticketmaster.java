@@ -420,12 +420,18 @@ public class Ticketmaster {
 		String q = "SELECT title FROM movies WHERE mvid IN  (SELECT mvid FROM shows WHERE sdate = '" + date + "' and sttime = '" 
 		+ startTime + "')";
 
-
+		System.out.println("");
 		int result = esql.executeQueryAndPrintResult(q);
+		System.out.println("\n");
+	
 	}
 
-	public static void ListMovieTitlesContainingLoveReleasedAfter2010(Ticketmaster esql){//11
-		//
+	public static void ListMovieTitlesContainingLoveReleasedAfter2010(Ticketmaster esql) throws SQLException {// 11
+		//select extract(year from rdate) from movies where mvid = 1;
+
+		int result = esql.executeQueryAndPrintResult("select title from movies where title like '%Love%' and extract(year from rdate) > 2010  ;");
+		
+
 		
 	}
 
