@@ -572,7 +572,7 @@ public class Ticketmaster {
 			
 		}
 
-		System.out.println("\nCancelled Bookings Removed \n");
+		System.out.println("\n Cancelled Bookings Removed \n");
 	}
 
 	public static void RemoveShowsOnDate(Ticketmaster esql) {// 8
