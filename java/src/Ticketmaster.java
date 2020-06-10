@@ -457,16 +457,16 @@ public class Ticketmaster {
 	System.out.println("");
 
 	q1 = "INSERT INTO Movies (mvid, title, rdate, country, description, duration, lang, genre) values (" 
-	+ mvid + ", " + title + ", " + releaseDate + ", " + country + ", " + description + ", " + 
-	duration + ", " + lang + ", " + genre + " );";
-	int result = esql.executeQueryAndPrintResult(q1);
+	+ mvid + ", '" + title + "', '" + releaseDate + "', '" + country + "', '" + description + "', " + 
+	duration + ", '" + lang + "', '" + genre + "' );";
+	esql.executeUpdate(q1);
 
-	q2 = "INSERT INTO Shows (sid, mvid, sdate, sttime, edtime) values (" + sid + ", " + mvid + ", " + 
-	sdate + ", " + sttime + ", " + edtime + ");";
-	result = esql.executeQueryAndPrintResult(q2);
+	q2 = "INSERT INTO Shows (sid, mvid, sdate, sttime, edtime) values (" + sid + ", " + mvid + ", '" + 
+	sdate + "', '" + sttime + "', '" + edtime + "');";
+	esql.executeUpdate(q2);
 
 	q3 = "INSERT INTO Plays (sid, tid) values (" + sid + ", " + tid + ");";
-	result = esql.executeQueryAndPrintResult(q3);
+	esql.executeUpdate(q3);
 
 
 	}//end option 3
