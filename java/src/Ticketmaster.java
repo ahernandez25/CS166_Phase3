@@ -348,31 +348,68 @@ public class Ticketmaster {
 		return input;
 	}// end readChoice
 
-	public static void AddUser(Ticketmaster esql) {// 1
-		/*System.out.println("Enter first name of new user: ");
-                String fname = in.nextLine();
-                System.out.println("Enter last name of new user: ");
-                String lname = in.nextLine();
-                System.out.println("Enter email address of new user: ");
-                String email = in.nextLine();
-                System.out.println("Enter phone number of new user: ");
-                String phone = in.nextLine();
-
-                
-                while(!validemail(email)) {
-                        System.out.println("Invalid email address! Please enter your email: ");
-                        email = in.nextLine();
-                }
-                while(!validPhone(phone)) {
-                        System.out.println("Invalid phone number! Please enter your phone number: ");
-                        phone = in.nextLine();
-                }*/
-                
-                //enter user into DB
+	public static boolean validInput(Ticketmaster esql, String table, String column, String query) throws IOException, SQLException {
+		if(query.isEmpty()) {
+			return false;
+		}
+		
+		//return True;
+		//search table to see if entry exists
+		List<List<String>> output = esql.executeQueryAndReturnResult("select " + column + " from " + table + "T where  T." + column + " = " + query);
+		if(output.isEmpty()) {
+			return false;
+		}
+		return true;
 	}
 
-	public static void AddBooking(Ticketmaster esql) {// 2
-		System.out.println("Enter: ");
+	public static void AddUser(Ticketmaster esql) throws IOException, SQLException {// 1
+		System.out.println("Enter first name of new user: ");
+                String fname = in.readLine();
+                System.out.println("Enter last name of new user: ");
+                String lname = in.readLine();
+                System.out.println("Enter email address of new user: ");
+                String email = in.readLine();
+                System.out.println("Enter phone number of new user: ");
+                String phone = in.readLine();
+		System.out.println("Enter a password for your account: ");
+		String password = in.readLine();
+                
+                //enter user into DB
+                esql.executeQuery("insert into user(" + email + " unique, first_name " + fname + ", phone " + phone  +", last_name " + lname + ", password " + password + ");");
+	}
+
+	public static void AddBooking(Ticketmaster esql) throws IOException, SQLException {// 2
+		String email = "", cinema = "", theater = "", movie, date, time;
+		while(!validInput(esql, "user", "email", email)) {
+			System.out.println("Enter email to book under: ");
+			email = in.readLine();
+		}
+		
+		while(!validInput(esql, "cinema", "name", cinema)) {
+			System.out.println("Enter cinema: ");
+			cinema = in.readLine();
+		}
+
+		while(!validInput(esql, "cinema theater", "theater name", theater)) {
+			System.out.println("Enter theater: ");
+			theater = in.readLine();
+		}
+
+		System.out.println("Enter movie: ");
+		movie = in.readLine();
+		System.out.println("Enter date of show: ");
+		date = in.readLine();
+		System.out.println("Enter time of show: ");
+		time = in.readLine();
+		System.out.println("How many seats do you want to book? ");
+		String numSeats = in.readLine();
+		int seats = Integer.parseInt(numSeats);
+		for(int i = 0; i < seats; i++) {
+			System.out.println("Enter seat number to book: ");
+			String seat = in.readLine();
+			//query to book seat
+			esql.executeQuery("");
+		}
 	}
 
 	public static void AddMovieShowingToTheater(Ticketmaster esql) throws IOException, SQLException {// 3
@@ -473,15 +510,44 @@ public class Ticketmaster {
 
 
 	public static void CancelPendingBookings(Ticketmaster esql) {// 4
-
+		
 	}
 
-	public static void ChangeSeatsForBooking(Ticketmaster esql) throws Exception {// 5
+	public static void ChangeSeatsForBooking(Ticketmaster esql) throws IOException, SQLException {// 5
+		String bookingid = "";
+		
+		while(!validInput(esql, "booking", "bookingID", bookingid)) {
+			System.out.println("Enter booking ID: ");
+			bookingid = in.readLine();
+		}
 
+		List<List<String>> seats = esql.executeQueryAndReturnResult("Select numSeats from booking there bookingid = " + bookingid);
+		
+		int numSeats = Integer.parseInt(seats.get(0).get(4)); 
+		//? I'll need to chack if that's the right place to look
+		
+		for(int i = 0; i < numSeats; i++) {
+			System.out.println("Which seat would like to change to? ");
+			String seat = in.readLine();
+			//umm.. I'll need to double check the database & fix this
+			//esql.executeQuery("Update seatBooked
+		}
+
+		System.out.println("Your booked seats have been updated");
 	}
 
-	public static void RemovePayment(Ticketmaster esql) {// 6
+	public static void RemovePayment(Ticketmaster esql) throws IOException, SQLException {// 6
+		String bookingid = "";
+		
+		while(!validInput(esql, "booking", "bookingid", bookingid)) {
+			System.out.println("Enter booking ID: ");
+			bookingid = in.readLine();
+		}
+		
+		//update payment so that payment is not connected to booking
+		//esql.executeQuery("update 
 
+		System.out.println("Your payment has been sucessfully been deleted.");
 	}
 
 	public static void ClearCancelledBookings(Ticketmaster esql) {// 7
@@ -492,9 +558,20 @@ public class Ticketmaster {
 
 	}
 
-	public static void ListTheatersPlayingShow(Ticketmaster esql) {// 9
-		//
+	public static void ListTheatersPlayingShow(Ticketmaster esql) throws IOException, SQLException  {// 9
+		String cinema, show;
 
+		System.out.println("Enter cinema ID: ");
+		cinema = in.readLine();
+		
+		System.out.println("Enter show ID: ");
+		show = in.readLine();
+		
+		//see how palyed in is being handled
+		//List<List<String>> theaters = esql.executeQueryAndReturnResult("select cinema_theater_id from cinema_theater where 
+		
+		System.out.println("These theaters are playing show with ID " + show);
+		//print out theater ID's and theeater names
 	}
 
 	public static void ListShowsStartingOnTimeAndDate(Ticketmaster esql) throws IOException, SQLException {// 10
