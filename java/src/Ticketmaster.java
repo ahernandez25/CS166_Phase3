@@ -374,9 +374,32 @@ public class Ticketmaster {
 		System.out.println("Enter: ");
 	}
 
-	public static void AddMovieShowingToTheater(Ticketmaster esql) {// 3
+	public static void AddMovieShowingToTheater(Ticketmaster esql) throws IOException, SQLException {// 3
+		/*insert into movies (mvid, title, rdate, country, description, duration, lang, genre) values
+		 (54, 'School of Rock', '10/03/2003', 'United States', 'Good Movie', 6180, 'en', 'Comedy');
+
+		 insert into shows (sid, mvid, sdate, sttime, edtime) values (201, 54, '06/09/2020', '12:00', '1:43');
+
+		 insert into plays (sid, tid) values (201, 444);
+
+	*/
+	String title, releaseDate, country, description, lang, genre, sdate, sttime, edtime;
+	int mvid, sid, tid;
+
+	List<List<String>> maxID = esql.executeQueryAndReturnResult("select max(mvid) from movies;");
+	mvid = Integer.parseInt(maxID.get(0).get(0)) + 1;
+
+		System.out.println("************ " + mvid);
+
+	/*System.out.print("Movie Title: ");
+	title = in.readLine();
+
+	System.out.print("Release Date(MM/DD/YYYY): ");
+	releaseDate = in.readLine();
+		*/
 
 	}
+
 
 	public static void CancelPendingBookings(Ticketmaster esql) {// 4
 
