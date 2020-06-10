@@ -384,7 +384,7 @@ public class Ticketmaster {
 		 insert into plays (sid, tid) values (201, 444);
 
 	*/
-	String title, releaseDate, country, description, lang, genre, sdate, sttime, edtime;
+	String title, releaseDate, country, description, lang, genre, sdate, sttime, edtime, q1, q2, q3;
 	int mvid, sid, tid, duration;
 
 
@@ -422,6 +422,7 @@ public class Ticketmaster {
 			continue;
 		} // end try
 	} while (true);
+	System.out.println("");
 
 	System.out.print("Language(2 Letter Abreviation): ");
 	lang = in.readLine();
@@ -455,9 +456,17 @@ public class Ticketmaster {
 	tid = Integer.parseInt(in.readLine());
 	System.out.println("");
 
+	q1 = "INSERT INTO Movies (mvid, title, rdate, country, description, duration, lang, genre) values (" 
+	+ mvid + ", " + title + ", " + releaseDate + ", " + country + ", " + description + ", " + 
+	duration + ", " + lang + ", " + genre + " );";
+	int result = esql.executeQueryAndPrintResult(q1);
 
+	q2 = "INSERT INTO Shows (sid, mvid, sdate, sttime, edtime) values (" + sid + ", " + mvid + ", " + 
+	sdate + ", " + sttime + ", " + edtime + ");";
+	result = esql.executeQueryAndPrintResult(q2);
 
-
+	q3 = "INSERT INTO Plays (sid, tid) values (" + sid + ", " + tid + ");";
+	result = esql.executeQueryAndPrintResult(q3);
 
 
 	}//end option 3
