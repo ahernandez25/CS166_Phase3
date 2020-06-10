@@ -503,9 +503,11 @@ public class Ticketmaster {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+
+			
 		}
 
-		System.out.println("\n Cancelled Bookings Removed \n");
+		System.out.println("\nCancelled Bookings Removed \n");
 	}
 
 	public static void RemoveShowsOnDate(Ticketmaster esql) {// 8
