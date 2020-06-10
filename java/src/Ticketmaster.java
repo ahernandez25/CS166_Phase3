@@ -510,7 +510,17 @@ public class Ticketmaster {
 
 
 	public static void CancelPendingBookings(Ticketmaster esql) {// 4
-		
+		String query;
+		query = "UPDATE Bookings SET status = 'cancelled' WHERE status = 'pending';";
+		try {
+			esql.executeUpdate(query);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		System.out.println("\n Pending Bookings cancelled\n");		
+
 	}
 
 	public static void ChangeSeatsForBooking(Ticketmaster esql) throws IOException, SQLException {// 5
