@@ -496,10 +496,42 @@ public class Ticketmaster {
 	}
 
 	public static void ClearCancelledBookings(Ticketmaster esql) {// 7
+		String query;
+		query = "DELETE FROM Bookings WHERE status = 'cancelled';";
+		try {
+			esql.executeUpdate(query);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
+		System.out.println("\n Cancelled Bookings Removed \n");
 	}
 
 	public static void RemoveShowsOnDate(Ticketmaster esql) {// 8
+
+		//delete from shows where sid in (select sid from plays where tid in (select tid from theaters where cid in
+		// (select cid from cinemas where cname =  'AMC')));
+
+		// update bookings set status = 'cancelled' where sid in (select sid from shows where sdate = '2/22/2019');
+
+
+		//select * from bookings where sid in (select sid from shows where sdate = '2/22/2019') and 
+		//sid in ((select sid from plays where tid in (select tid from theaters where cid in (select cid from cinemas where cname =  'AMC')))
+
+
+		/* delete from ShowSeats  where sid in (select sid from shows where sdate = '1/01/2019') and 
+ 			sid in ((select sid from plays where tid in (select tid from theaters where cid in 
+ 			(select cid from cinemas where cname =  'AMC'))));
+ 
+ 
+		 delete from plays  where sid in (select sid from shows where sdate = '1/01/2019') and
+		 sid in ((select sid from plays where tid in (select tid from theaters where cid in (select cid from cinemas where cname =  'AMC')))
+		);
+
+		delete from shows  where sid in (select sid from shows where sdate = '1/01/2019') and sid in 
+		((select sid from plays where tid in (select tid from theaters where cid in (select cid from cinemas where cname =  'AMC')))
+		); */
 
 	}
 
