@@ -348,21 +348,9 @@ public class Ticketmaster {
 		return input;
 	}// end readChoice
 
-	public static boolean validInput(Ticketmaster esql, String table, String column, String query) throws IOException, SQLException {
-		if(query.isEmpty()) {
-			return false;
-		}
-		
-		//return True;
-		//search table to see if entry exists
-		List<List<String>> output = esql.executeQueryAndReturnResult("select " + column + " from " + table + "T where  T." + column + " = " + query);
-		if(output.isEmpty()) {
-			return false;
-		}
-		return true;
-	}
-
 	public static void AddUser(Ticketmaster esql) throws IOException, SQLException {// 1
+		
+		
 		System.out.println("Enter first name of new user: ");
                 String fname = in.readLine();
                 System.out.println("Enter last name of new user: ");
@@ -372,45 +360,101 @@ public class Ticketmaster {
                 System.out.println("Enter phone number of new user: ");
                 String phone = in.readLine();
 		System.out.println("Enter a password for your account: ");
-		String password = in.readLine();
-                
+		String password = in.readLine();                
+
                 //enter user into DB
-                esql.executeQuery("insert into user(" + email + " unique, first_name " + fname + ", phone " + phone  +", last_name " + lname + ", password " + password + ");");
+                esql.executeQuery("insert into users values('" + email + "', '" + lname + "', '" + fname  +"', '" + phone + "', '" + password + "');");
+                
 	}
 
 	public static void AddBooking(Ticketmaster esql) throws IOException, SQLException {// 2
-		String email = "", cinema = "", theater = "", movie, date, time;
-		while(!validInput(esql, "user", "email", email)) {
-			System.out.println("Enter email to book under: ");
-			email = in.readLine();
+		String email, title, cinema, mvid;
+
+		System.out.println("Please enter email of account you would like to make the booking with: ");
+		email = in.readLine();
+		
+		//validate email exists in db
+		List<List<String>> user = esql.executeQueryAndReturnResult("select email from users where email = '" + email + "';");
+		if(user != null && user.isEmpty()) {
+			//given email is invalid
+			System.out.println("Invalid email address! Try again.");
+			return;
 		}
 		
-		while(!validInput(esql, "cinema", "name", cinema)) {
-			System.out.println("Enter cinema: ");
-			cinema = in.readLine();
+		System.out.println("Enter movie you would like to see: ");
+		title = in.readLine();
+		//validate movie exists
+		List<List<String>> movieid = esql.executeQueryAndReturnResult("select mvid from movies where title = '" + title + "';");
+		if(movieid != null && !movieid.isEmpty()) {
+			mvid = movieid.get(0).get(0);
+		} else {
+			//given movie is invalid
+			System.out.println("Not a valid movie title! Try again.");
+			return;
 		}
+		
+		System.out.println("Which cinema would you like to go to? ");
+		cinema = in.readLine();
+		System.out.println("We found these showings at that cinema:");
 
-		while(!validInput(esql, "cinema theater", "theater name", theater)) {
-			System.out.println("Enter theater: ");
-			theater = in.readLine();
+		//pull list of possible showings
+		//esql.executeQueryAndPrintResult("select sid, sdate, sttime from shows where mvid = '" + mvid + "' and sid in (select sid from plays where tid in (select tid from theaters where cid in (select cid from cinemas where cname = '" + cinema + "')));");
+		esql.executeQueryAndPrintResult("select sid, sdate, sttime from shows where mvid = '2' and sid in (select sid from plays where tid in (select tid from theaters where tname = '" + cinema + " Theaters 1'));");
+		System.out.println("Enter sid of showing you would like to attend. If there are no showings listed, enter \"no showing\": ");
+		String sid = in.readLine();
+		
+		//check that a showing was able to be found!!
+		if(sid.equals("no showing")) {
+			return;
 		}
+		
+		//get fate and time in proper format
+		List<List<String>> showingdatetime = esql.executeQueryAndReturnResult("select sdate, sttime from shows where sid = '" + sid + "';");
+		String datetime = "";
+		if(showingdatetime != null && !showingdatetime.isEmpty()) {
+			datetime = showingdatetime.get(0).get(0) + " " +  showingdatetime.get(0).get(1);
+		}
+		
+		//bid and payment status
+		List<List<String>> maxbid = esql.executeQueryAndReturnResult("select max(bid) from bookings;");
+		String bid = Integer.toString(Integer.parseInt(maxbid.get(0).get(0)) + 1);
+		String status = "Paid";
+		
+		//book seating
+		System.out.println("How many seats would you like to reserve? ");
+		String seats = in.readLine();
+		int numSeats = Integer.parseInt(seats);
+		
+		List<List<String>> theaterid = esql.executeQueryAndReturnResult("select tid from plays where sid = '" + sid + "';");
+		String tid = theaterid.get(0).get(0);
+		
+		//enter booking info into table
+		String q1 = "insert into bookings values ('" + bid + "', '" + status + "', '" + datetime + "', '" + seats + "', '" + sid + "', '" + email + "');";
+                esql.executeUpdate(q1);
 
-		System.out.println("Enter movie: ");
-		movie = in.readLine();
-		System.out.println("Enter date of show: ");
-		date = in.readLine();
-		System.out.println("Enter time of show: ");
-		time = in.readLine();
-		System.out.println("How many seats do you want to book? ");
-		String numSeats = in.readLine();
-		int seats = Integer.parseInt(numSeats);
-		for(int i = 0; i < seats; i++) {
-			System.out.println("Enter seat number to book: ");
-			String seat = in.readLine();
-			//query to book seat
-			esql.executeQuery("");
-		}
+		//reserve seat selections
+		for(int i = 0; i < numSeats; i++) {
+			System.out.println("These are the available seats in the theater. Enter seat number you want to reserve. If there are no empty seats, enter \"no seats\": ");
+			esql.executeQueryAndPrintResult("select sno from cinemaseats where tid = '" + tid + "' and csid not in (select csid from showseats);");
+			String sno = in.readLine();
+		
+			if(sno.equals("no seats")) {
+				return;
+			}
+			
+			String csid = esql.executeQueryAndReturnResult("select csid from cinemaseats where tid = '" + tid + "' and sno = '" + sno + "';").get(0).get(0);
+			String price = "8";
+			
+			List<List<String>> maxssid = esql.executeQueryAndReturnResult("select max(ssid) from showseats;");
+                	String ssid = Integer.toString(Integer.parseInt(maxssid.get(0).get(0)) + 1);
+			
+			String q = "insert into showseats values('" + ssid + "', '" + sid + "', '" + csid + "', '" + bid + "', '" + price + "');";
+			esql.executeUpdate(q);
+		}	
+
+		System.out.println("Your booking was sucessfully processed!");
 	}
+
 
 	public static void AddMovieShowingToTheater(Ticketmaster esql) throws IOException, SQLException {// 3
 		/*insert into movies (mvid, title, rdate, country, description, duration, lang, genre) values
