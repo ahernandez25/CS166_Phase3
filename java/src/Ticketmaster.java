@@ -596,7 +596,7 @@ public class Ticketmaster {
                 String tid = esql.executeQueryAndReturnResult("select tid from plays where sid in (select sid from bookings where sid = '" + sid + "');").get(0).get(0);
 
                 //how many seats are on the reservation
-                int numseats = Integer.parseInt(esql.executeQueryAndReturnResult("select seats from bookings where bid = 'bid';").get(0).get(0));
+                int numseats = Integer.parseInt(esql.executeQueryAndReturnResult("select seats from bookings where bid = '" + bid + "';").get(0).get(0));
                 String maxseat = esql.executeQueryAndReturnResult("select max(sno) from cinemaseats where tid = '" + tid + "';").get(0).get(0);
                 List<List<String>> seats = esql.executeQueryAndReturnResult("select tid, sno, stype, csid from cinemaseats where csid in (select csid from showseats where bid = " + bid + "));");
 
@@ -605,7 +605,7 @@ public class Ticketmaster {
                         String seat = seats.get(i).get(0) + ", " + seats.get(i).get(1) + ": " + seats.get(i).get(2);
                         String csid = seats.get(i).get(3);
                         System.out.println("Replace seat [" + seat + "]. These seats are currently free: ");
-                        esql.executeQueryAndPrintResult("select sno from cinemaseats where tid = '" + tid + "' and csid not in (select csid from showseats);");
+                        esql.executeQueryAndPrintResult("select sno, stype from cinemaseats where tid = '" + tid + "' and csid not in (select csid from showseats);");
 
 
                         System.out.println("Which seat would you like to reserve?");
@@ -619,8 +619,8 @@ public class Ticketmaster {
                         }
 
  			String newcsid = esql.executeQueryAndReturnResult("select csid from cinemaseats where tid = '" + tid + "' and sno = '" + replace + "';").get(0).get(0);
-                        String oldtype = esql.executeQueryAndReturnResult("select stype from cinemaseats where cid = '" + csid + "';").get(0).get(0);
-                        String newtype = esql.executeQueryAndReturnResult("select stype from cinemaseats where cid = '" + newcsid + "';").get(0).get(0);
+                        String oldtype = esql.executeQueryAndReturnResult("select stype from cinemaseats where csid = '" + csid + "';").get(0).get(0);
+                        String newtype = esql.executeQueryAndReturnResult("select stype from cinemaseats where csid = '" + newcsid + "';").get(0).get(0);
 
                         //checking that seat is exchangable
                         if(!oldtype.equals(newtype)) {
