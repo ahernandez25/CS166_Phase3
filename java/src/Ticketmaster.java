@@ -724,20 +724,19 @@ public class Ticketmaster {
 	}
 
 	public static void ListTheatersPlayingShow(Ticketmaster esql) throws IOException, SQLException  {// 9
-		String cinema, show;
+                System.out.println("Which cinema would you like to see the listings for?");
+                String cinema = in.readLine();
 
-		System.out.println("Enter cinema ID: ");
-		cinema = in.readLine();
-		
-		System.out.println("Enter show ID: ");
-		show = in.readLine();
-		
-		//see how palyed in is being handled
-		//List<List<String>> theaters = esql.executeQueryAndReturnResult("select cinema_theater_id from cinema_theater where 
-		
-		System.out.println("These theaters are playing show with ID " + show);
-		//print out theater ID's and theeater names
-	}
+                System.out.println("Which movie would you like to look for?" );
+                String title = in.readLine();
+
+                esql.executeQueryAndPrintResult("select * from shows where mvid in (select mvid from movies where title = '" + title + "') and sid in (select sid from theaters where tname = '" + cinema + " Theaters 1');");
+
+                System.out.println("Enter sid to track: ");
+                String sid = in.readLine();
+
+                esql.executeQueryAndPrintResult("select * from theaters where tid in (select tid from plays where sid = '" + sid + "');");
+        }
 
 	public static void ListShowsStartingOnTimeAndDate(Ticketmaster esql) throws IOException, SQLException {// 10
 		// still need to figure out how to conver string to date in sql
@@ -771,10 +770,9 @@ public class Ticketmaster {
 		
 	}
 
-	public static void ListUsersWithPendingBooking(Ticketmaster esql){//12
-		//
-		
-	}
+	public static void ListUsersWithPendingBooking(Ticketmaster esql) throws SQLException {//12
+                esql.executeQueryAndPrintResult("select fname, lname, email from users where email in (select email from bookings where status = 'Pending');");
+        }
 
 	public static void ListMovieAndShowInfoAtCinemaInDateRange(Ticketmaster esql) throws IOException, SQLException {// 13
 		/*select m1.title, m1.duration, s1.sdate, s1.sttime from movies m1, shows s1 where m1.title = 
