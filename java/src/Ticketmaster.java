@@ -567,43 +567,120 @@ public class Ticketmaster {
 
 	}
 
-	public static void ChangeSeatsForBooking(Ticketmaster esql) throws IOException, SQLException {// 5
-		String bookingid = "";
-		
-		while(!validInput(esql, "booking", "bookingID", bookingid)) {
-			System.out.println("Enter booking ID: ");
-			bookingid = in.readLine();
-		}
+	
+ 	public static void ChangeSeatsForBooking(Ticketmaster esql) throws IOException, SQLException {// 5
+                System.out.println("What is the email that the booking was made with? ");
+                String email = in.readLine();
 
-		List<List<String>> seats = esql.executeQueryAndReturnResult("Select numSeats from booking there bookingid = " + bookingid);
-		
-		int numSeats = Integer.parseInt(seats.get(0).get(4)); 
-		//? I'll need to chack if that's the right place to look
-		
-		for(int i = 0; i < numSeats; i++) {
-			System.out.println("Which seat would like to change to? ");
-			String seat = in.readLine();
-			//umm.. I'll need to double check the database & fix this
-			//esql.executeQuery("Update seatBooked
-		}
+                List<List<String>> confirmEmail = esql.executeQueryAndReturnResult("select email from bookings where email = '" + email + "';");
 
-		System.out.println("Your booked seats have been updated");
+                if(confirmEmail != null && confirmEmail.isEmpty()) {
+                        System.out.println("We coudn't find any bookings with that email! Try again.");
+                        return;
+                }
+
+                System.out.println("Here are the bookings on your account: ");
+                esql.executeQueryAndPrintResult("select * from bookings where email = '" + email + "';");
+
+
+                System.out.println("What is the booking id you would like to change? ");
+                String bid = in.readLine();
+
+                List<List<String>> bookingid = esql.executeQueryAndReturnResult("select bid from bookings where bid = '" + bid + "';");
+                if(bookingid != null && bookingid.isEmpty()) {
+                        System.out.println("Invalid booking id! Try again.");
+                        return;
+                }
+
+                String sid = esql.executeQueryAndReturnResult("select sid from bookings where bid = '" + bid + "';").get(0).get(0);
+                String tid = esql.executeQueryAndReturnResult("select tid from plays where sid in (select sid from bookings where sid = '" + sid + "');").get(0).get(0);
+
+                //how many seats are on the reservation
+                int numseats = Integer.parseInt(esql.executeQueryAndReturnResult("select seats from bookings where bid = 'bid';").get(0).get(0));
+                String maxseat = esql.executeQueryAndReturnResult("select max(sno) from cinemaseats where tid = '" + tid + "';").get(0).get(0);
+                List<List<String>> seats = esql.executeQueryAndReturnResult("select tid, sno, stype, csid from cinemaseats where csid in (select csid from showseats where bid = " + bid + "));");
+
+                //run through all booked seats and change
+                for(int i = 0; i < numseats; i++) {
+                        String seat = seats.get(i).get(0) + ", " + seats.get(i).get(1) + ": " + seats.get(i).get(2);
+                        String csid = seats.get(i).get(3);
+                        System.out.println("Replace seat [" + seat + "]. These seats are currently free: ");
+                        esql.executeQueryAndPrintResult("select sno from cinemaseats where tid = '" + tid + "' and csid not in (select csid from showseats);");
+
+
+                        System.out.println("Which seat would you like to reserve?");
+                        String replace = in.readLine();
+
+                        //checking that seat selection is in range
+                        if(Integer.parseInt(replace) > Integer.parseInt(maxseat)) {
+                                System.out.println("There is no seat with that number in the theater.");
+                                i--;
+                                break;
+                        }
+
+ 			String newcsid = esql.executeQueryAndReturnResult("select csid from cinemaseats where tid = '" + tid + "' and sno = '" + replace + "';").get(0).get(0);
+                        String oldtype = esql.executeQueryAndReturnResult("select stype from cinemaseats where cid = '" + csid + "';").get(0).get(0);
+                        String newtype = esql.executeQueryAndReturnResult("select stype from cinemaseats where cid = '" + newcsid + "';").get(0).get(0);
+
+                        //checking that seat is exchangable
+                        if(!oldtype.equals(newtype)) {
+                                System.out.println("You can only exchange seats that are the same price as the original.");
+                                i--;
+                                break;
+                        }
+
+                        String q = "update showseats set csid = '" + newcsid + "' where csid = '" + csid + "';";
+                        esql.executeUpdate(q);
+                }
+
+                System.out.println("Seat reservations sucessfully updated!");
+
 	}
+
+
 
 	public static void RemovePayment(Ticketmaster esql) throws IOException, SQLException {// 6
-		String bookingid = "";
-		
-		while(!validInput(esql, "booking", "bookingid", bookingid)) {
-			System.out.println("Enter booking ID: ");
-			bookingid = in.readLine();
-		}
-		
-		//update payment so that payment is not connected to booking
-		//esql.executeQuery("update 
+                System.out.println("What is the email that the booking was made with? ");
+                String email = in.readLine();
 
-		System.out.println("Your payment has been sucessfully been deleted.");
-	}
+                List<List<String>> confirmEmail = esql.executeQueryAndReturnResult("select email from bookings where email = '" + email + "';");
 
+                if(confirmEmail != null && confirmEmail.isEmpty()) {
+                        System.out.println("We coudn't find any bookings with that email! Try again.");
+                        return;
+                }
+
+                System.out.println("Here are the bookings on your account: ");
+                esql.executeQueryAndPrintResult("select * from bookings where email = '" + email + "';");
+
+
+                System.out.println("Which bid would you like to cancel? ");
+                String bid = in.readLine();
+
+                List<List<String>> bookingid = esql.executeQueryAndReturnResult("select bid from bookings where bid = '" + bid + "';");
+                if(bookingid != null && bookingid.isEmpty()) {
+                        System.out.println("Invalid booking id! Try again.");
+                        return;
+                }
+
+                String status = esql.executeQueryAndReturnResult("select status from bookings where bid = '" + bid + "';").get(0).get(0);
+
+                if(status.equals("Paid")) {
+                        //remove payment from db
+                        String q = "delete from payments where bid = '" + bid + "';";
+                        esql.executeUpdate(q);
+                }
+
+                if(!status.equals("Cancelled")) {
+                        //change status to cancelled
+                        String q = "update bookings set status = 'Cancelled' where bid = '" + bid + "';";
+                        esql.executeUpdate(q);
+                }
+
+
+                System.out.println("Your payment has been sucessfully been deleted.");
+        }
+	
 	public static void ClearCancelledBookings(Ticketmaster esql) {// 7
 		String query;
 		query = "DELETE FROM Bookings WHERE status = 'cancelled';";
