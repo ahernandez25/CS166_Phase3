@@ -808,9 +808,31 @@ public class Ticketmaster {
 
 	}
 
-	public static void ListBookingInfoForUser(Ticketmaster esql){//14
-		//
-		
+	public static void ListBookingInfoForUser(Ticketmaster esql) throws IOException, SQLException {//14
+                System.out.println("Enter user email: ");
+                String email = in.readLine();
+
+                List<List<String>> bookings = esql.executeQueryAndReturnResult("select bid, bdatetime from bookings where email = '" + email + "';");
+                //System.out.println("get bookings info");
+                List<List<String>> titles = esql.executeQueryAndReturnResult("select title from movies where mvid in (select mvid from shows where sid in (select sid from bookings where email = '" + email + "'));");
+                //System.out.println("get titles info");
+                List<List<String>> theatername = esql.executeQueryAndReturnResult("select tname from theaters where tid in (select tid from plays where sid in (select sid from bookings where email = '" + email + "'));");
+                //System.out.println("get theater info");
+                List<List<String>> csids = esql.executeQueryAndReturnResult("select sno from cinemaseats where csid in (select csid from showseats where bid > 0 and bid in (select bid from bookings where email = '" + email + "'));");
+                //System.out.println("get csids");
+
+                int numbookings = bookings.size();
+
+                System.out.println("Title\tDate and Time\t\t\tTheater Name\t\t\tCinema Seat Number");
+                for(int i = 0; i < numbookings; i++) {
+                        String bid = bookings.get(i).get(0);
+                        String title = titles.get(i).get(0);
+                        String datetime = bookings.get(i).get(1);
+                        String theater = theatername.get(i).get(0);
+                        String csid = csids.get(i).get(0);
+
+                        System.out.println(title + "\t" + datetime + "\t\t" + theater + "\t\t" + csid);
+                }
 	}
 	
 }
