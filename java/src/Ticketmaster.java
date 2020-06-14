@@ -696,7 +696,7 @@ public class Ticketmaster {
 		System.out.println("\n Cancelled Bookings Removed \n");
 	}
 
-	public static void RemoveShowsOnDate(Ticketmaster esql) {// 8
+	public static void RemoveShowsOnDate(Ticketmaster esql) throws IOException, SQLException {// 8
 
 		//delete from shows where sid in (select sid from plays where tid in (select tid from theaters where cid in
 		// (select cid from cinemas where cname =  'AMC')));
@@ -720,6 +720,54 @@ public class Ticketmaster {
 		delete from shows  where sid in (select sid from shows where sdate = '1/01/2019') and sid in 
 		((select sid from plays where tid in (select tid from theaters where cid in (select cid from cinemas where cname =  'AMC')))
 		); */
+
+		String date, cinema, q1, q2, q3;
+
+		System.out.print("Enter Date(MM/DD/YYYY): ");
+		date = in.readLine();
+
+		System.out.print("Enter Cinema: ");
+		cinema = in.readLine();
+
+		q1 = "delete from ShowSeats where sid in (select sid from shows where sdate = '" + date + "') and " + 
+		"sid in ((select sid from plays where tid in (select tid from theaters where cid in	" + 
+		"(select cid from cinemas where cname =  '" + cinema + "'))));";
+
+		q2 = "delete from plays where sid in (select sid from shows where sdate = '" + date + "') and " +
+		"sid in ((select sid from plays where tid in (select tid from theaters where cid in " + 
+		"(select cid from cinemas where cname =  '" + cinema + "'))));";
+
+		q3 = "delete from shows  where sid in (select sid from shows where sdate = '" + date + "') and sid in " +
+		"((select sid from plays where tid in (select tid from theaters where cid in " + 
+		"(select cid from cinemas where cname =  '" + cinema + "'))));";
+
+	
+		esql.executeUpdate(q1);
+		esql.executeUpdate(q2);
+		esql.executeUpdate(q3);	
+
+		String getBid = "select bid from bookings where sid in (select sid from shows where sdate = '" + date + "') and sid in " +
+		"((select sid from plays where tid in (select tid from theaters where cid in " +
+		"(select cid from cinemas where cname =  '" + cinema + "'))));";
+
+		List<List<String>> bidList = esql.executeQueryAndReturnResult(getBid);
+		for(int i = 0; i < bidList.size(); i++){
+			String status = esql.executeQueryAndReturnResult("select status from bookings where bid = '" + 
+							bidList.get(0).get(i) + "';").get(0).get(0);
+
+			if(status.equals("Paid")) {
+			//remove payment from db
+			    String q = "delete from payments where bid = '" + bidList.get(0).get(i) + "';";
+			    esql.executeUpdate(q);
+			}
+			
+			if(!status.equals("Cancelled")) {
+			//change status to cancelled
+			    String q = "update bookings set status = 'Cancelled' where bid = '" + bidList.get(0).get(i) + "';";
+			    esql.executeUpdate(q);
+			}			
+		}
+		System.out.println("Shows on given date deleted ....\n");
 
 	}
 
