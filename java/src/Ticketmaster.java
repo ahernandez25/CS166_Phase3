@@ -363,7 +363,7 @@ public class Ticketmaster {
 		String password = in.readLine();                
 
                 //enter user into DB
-                esql.executeQuery("insert into users values('" + email + "', '" + lname + "', '" + fname  +"', '" + phone + "', '" + password + "');");
+                esql.executeUpdate("insert into users values('" + email + "', '" + lname + "', '" + fname  +"', '" + phone + "', '" + password + "');");
                 
 	}
 
