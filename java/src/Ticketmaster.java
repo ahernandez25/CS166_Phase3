@@ -598,7 +598,7 @@ public class Ticketmaster {
                 //how many seats are on the reservation
                 int numseats = Integer.parseInt(esql.executeQueryAndReturnResult("select seats from bookings where bid = '" + bid + "';").get(0).get(0));
                 String maxseat = esql.executeQueryAndReturnResult("select max(sno) from cinemaseats where tid = '" + tid + "';").get(0).get(0);
-                List<List<String>> seats = esql.executeQueryAndReturnResult("select tid, sno, stype, csid from cinemaseats where csid in (select csid from showseats where bid = " + bid + "));");
+                List<List<String>> seats = esql.executeQueryAndReturnResult("select tid, sno, stype, csid from cinemaseats where csid in (select csid from showseats where bid = " + bid + ");");
 
                 //run through all booked seats and change
                 for(int i = 0; i < numseats; i++) {
